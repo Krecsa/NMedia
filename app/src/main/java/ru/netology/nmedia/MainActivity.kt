@@ -14,9 +14,10 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
         val binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
         ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            v.setPadding(systemBars.left + v.left, systemBars.top + v.top, systemBars.right + v.right, systemBars.bottom + v.bottom)
             insets
         }
 
@@ -33,6 +34,7 @@ class MainActivity : AppCompatActivity() {
         )
 
         with(binding) {
+
             author?.text = post.author
             published?.text = post.published
             content?.text = post.content
@@ -44,6 +46,7 @@ class MainActivity : AppCompatActivity() {
             like?.setImageResource(if (post.likedByMe) R.drawable.ic_liked_24 else R.drawable.ic_like_24)
 
             like?.setOnClickListener {
+
                 post = post.copy(
                     likes = if (post.likedByMe) post.likes - 1 else post.likes + 1,
                     likedByMe = !post.likedByMe
