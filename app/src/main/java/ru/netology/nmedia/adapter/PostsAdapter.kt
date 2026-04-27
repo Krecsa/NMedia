@@ -6,11 +6,12 @@ import androidx.recyclerview.widget.RecyclerView
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.CardPostBinding
 import ru.netology.nmedia.dto.Post
-import ru.netology.nmedia.formatCount  // <- добавьте импорт
+import ru.netology.nmedia.formatCount
 
 typealias LikeListener = (Post) -> Unit
+typealias ShareListener = (Post) -> Unit
 
-class PostsAdapter(private val likeListener: LikeListener) : RecyclerView.Adapter<PostViewHolder>() {
+class PostsAdapter(private val likeListener: LikeListener, private val shareListener: ShareListener) : RecyclerView.Adapter<PostViewHolder>() {
 
     var list: List<Post> = emptyList()
         set(value) {
@@ -20,7 +21,7 @@ class PostsAdapter(private val likeListener: LikeListener) : RecyclerView.Adapte
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
         val binding = CardPostBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return PostViewHolder(binding, likeListener)
+        return PostViewHolder(binding, likeListener, shareListener)
     }
 
     override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
@@ -33,7 +34,8 @@ class PostsAdapter(private val likeListener: LikeListener) : RecyclerView.Adapte
 
 class PostViewHolder(
     private val binding: CardPostBinding,
-    private val likeListener: LikeListener
+    private val likeListener: LikeListener,
+    private val shareListener: ShareListener
 ) : RecyclerView.ViewHolder(binding.root) {
 
     fun bind(post: Post) {
@@ -41,12 +43,16 @@ class PostViewHolder(
             author.text = post.author
             published.text = post.published
             content.text = post.content
-            likeCount.text = formatCount(post.likes)  // <- изменённая строка
-            like.setImageResource(
+            likeCount.text = formatCount(post.likes)
                 if (post.likedByMe) R.drawable.ic_liked_24 else R.drawable.ic_like_24
-            )
+            like.setImageResource(if (post.likedByMe) R.drawable.ic_liked_24 else R.drawable.ic_like_24)
             like.setOnClickListener {
                 likeListener(post)
+            }
+
+            shareCount.text = formatCount(post.shares)
+            share.setOnClickListener {
+                shareListener(post)
             }
         }
     }
