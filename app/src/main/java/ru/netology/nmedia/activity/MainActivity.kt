@@ -26,7 +26,8 @@ class MainActivity : AppCompatActivity() {
         val viewModel: PostViewModel by viewModels()
         val adapter = PostsAdapter(
             { viewModel.likeById(it.id.toLong()) },
-            { viewModel.shareById(it.id.toLong()) }
+            { viewModel.shareById(it.id.toLong()) },
+            removeListener = { viewModel.removeById(it.id.toLong()) }
         )
         binding.list?.adapter = adapter
         viewModel.data.observe(this) { posts ->

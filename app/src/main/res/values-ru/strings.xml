@@ -3,6 +3,7 @@
     <string name="app_name">НМедиа!</string>
     <string name="description_post_author_avatar">Аватар автора поста</string>
     <string name="description_post_menu">Меню поста</string>
+    <string name="menu_remove">Удалить</string>
     <string name="description_post_like">Лайк</string>
     <string name="description_post_share">Репост</string>
 </resources>
