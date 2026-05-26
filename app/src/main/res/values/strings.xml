@@ -3,6 +3,7 @@
     <string name="description_post_author_avatar">Post author avatar</string>
     <string name="description_post_menu">Post menu</string>
     <string name="menu_remove">Delete</string>
+    <string name="menu_edit">Edit</string>
     <string name="description_post_like">Like</string>
     <string name="description_post_share">Share</string>
     <string name="content_is_blank_error">Post cannot be empty</string>
