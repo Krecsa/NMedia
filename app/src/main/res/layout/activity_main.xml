@@ -55,7 +55,7 @@
         android:layout_height="48dp"
         android:src="@drawable/ic_close"
         android:background="?attr/selectableItemBackgroundBorderless"
-        android:tint="#9E9E9E"
+        app:tint="#9E9E9E"
         app:layout_constraintBottom_toBottomOf="@id/editLabel"
         app:layout_constraintTop_toTopOf="@id/editLabel"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -78,7 +78,7 @@
         android:layout_height="48dp"
         android:src="@drawable/ic_send"
         android:background="?attr/selectableItemBackgroundBorderless"
-        android:tint="#9E9E9E"
+        app:tint="#9E9E9E"
         app:layout_constraintBottom_toBottomOf="@id/content"
         app:layout_constraintTop_toTopOf="@id/content"
         app:layout_constraintEnd_toEndOf="parent" />
