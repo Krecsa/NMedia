@@ -5,5 +5,6 @@
     <string name="menu_remove">Delete</string>
     <string name="description_post_like">Like</string>
     <string name="description_post_share">Share</string>
+    <string name="content_is_blank_error">Post cannot be empty</string>
 
 </resources>

@@ -2,7 +2,7 @@ package ru.netology.nmedia.activity
 
 import android.os.Bundle
 import android.widget.Toast
-import androidx.activity.R
+import ru.netology.nmedia.R
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
