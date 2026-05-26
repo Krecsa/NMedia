@@ -42,15 +42,34 @@ class MainActivity : AppCompatActivity() {
                 binding.content.setText(post.content)
                 binding.content.requestFocus()
                 AndroidUtils.showKeyboard(binding.content)
-                binding.editPanel.visibility = View.VISIBLE
+                binding.editGroup.visibility = View.VISIBLE
             } else {
                 binding.content.setText("")
-                binding.editPanel.visibility = View.GONE
+                binding.editGroup.visibility = View.GONE
             }
         }
 
         binding.cancel.setOnClickListener {
             viewModel.cancelEdit()
+            binding.content.setText("")
+            binding.content.clearFocus()
+            AndroidUtils.hideKeyboard(binding.content)
+        }
+
+        binding.save.setOnClickListener {
+            val content = binding.content.text.toString()
+            if (content.isBlank()) return@setOnClickListener
+            viewModel.savePost(content)
+            binding.content.setText("")
+            binding.content.clearFocus()
+            AndroidUtils.hideKeyboard(binding.content)
+        }
+
+        binding.save.setOnClickListener {
+            val content = binding.content.text.toString()
+            if (content.isBlank())
+                return@setOnClickListener
+            viewModel.savePost(content)
             binding.content.setText("")
             binding.content.clearFocus()
             AndroidUtils.hideKeyboard(binding.content)

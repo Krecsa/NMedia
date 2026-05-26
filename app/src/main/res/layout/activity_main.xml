@@ -12,47 +12,53 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/editPanel"
+        app:layout_constraintBottom_toTopOf="@id/content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         tools:listitem="@layout/card_post" />
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/editPanel"
+    <View
+        android:id="@+id/editBackground"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
+        android:background="#E8E8E8"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/content"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintEnd_toEndOf="parent" />
 
-        <TextView
-            android:id="@+id/editLabel"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="Edit message"
-            android:paddingStart="12dp"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
-            android:textColor="#757575"
-            android:textSize="14sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/cancel"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/editGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:constraint_referenced_ids="editBackground, editLabel, cancel" />
 
-        <ImageButton
-            android:id="@+id/cancel"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:src="@drawable/ic_close"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
+    <TextView
+        android:id="@+id/editLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Edit message"
+        android:paddingStart="12dp"
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp"
+        android:textColor="#9E9E9E"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toTopOf="@id/content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/cancel" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    <ImageButton
+        android:id="@+id/cancel"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:src="@drawable/ic_close"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:tint="#9E9E9E"
+        app:layout_constraintBottom_toBottomOf="@id/editLabel"
+        app:layout_constraintTop_toTopOf="@id/editLabel"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <EditText
         android:id="@+id/content"
@@ -72,6 +78,7 @@
         android:layout_height="48dp"
         android:src="@drawable/ic_send"
         android:background="?attr/selectableItemBackgroundBorderless"
+        android:tint="#9E9E9E"
         app:layout_constraintBottom_toBottomOf="@id/content"
         app:layout_constraintTop_toTopOf="@id/content"
         app:layout_constraintEnd_toEndOf="parent" />
