@@ -1,6 +1,7 @@
 package ru.netology.nmedia.activity
 
 import android.os.Bundle
+import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -41,15 +42,15 @@ class MainActivity : AppCompatActivity() {
                 binding.content.setText(post.content)
                 binding.content.requestFocus()
                 AndroidUtils.showKeyboard(binding.content)
+                binding.editPanel.visibility = View.VISIBLE
             } else {
                 binding.content.setText("")
+                binding.editPanel.visibility = View.GONE
             }
         }
 
-        binding.save.setOnClickListener {
-            val content = binding.content.text.toString()
-            if (content.isBlank()) return@setOnClickListener
-            viewModel.savePost(content)
+        binding.cancel.setOnClickListener {
+            viewModel.cancelEdit()
             binding.content.setText("")
             binding.content.clearFocus()
             AndroidUtils.hideKeyboard(binding.content)
