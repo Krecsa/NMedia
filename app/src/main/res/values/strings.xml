@@ -7,5 +7,6 @@
     <string name="description_post_like">Like</string>
     <string name="description_post_share">Share</string>
     <string name="content_is_blank_error">Post cannot be empty</string>
+    <string name="description_post_save">Save</string>
 
 </resources>

@@ -8,4 +8,5 @@
     <string name="description_post_like">Лайк</string>
     <string name="description_post_share">Репост</string>
     <string name="content_is_blank_error">Пост не может быть пустым</string>
+    <string name="description_post_save">Сохранить</string>
 </resources>
