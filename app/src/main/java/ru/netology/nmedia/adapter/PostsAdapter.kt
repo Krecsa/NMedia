@@ -64,7 +64,7 @@ class PostViewHolder(
                 likeListener(post)
             }
 
-            shareCount.text = formatCount(post.shares)
+            share.text = formatCount(post.shares)
             share.setOnClickListener {
                 shareListener(post)
             }
