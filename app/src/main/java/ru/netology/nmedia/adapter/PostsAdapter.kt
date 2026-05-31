@@ -1,6 +1,9 @@
 package ru.netology.nmedia.adapter
 
+import android.content.Intent
+import android.net.Uri
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
@@ -37,7 +40,6 @@ class PostsAdapter(
         val post = getItem(position)
         holder.bind(post)
     }
-
 }
 
 class PostDiffCallback : DiffUtil.ItemCallback<Post>() {
@@ -78,17 +80,31 @@ class PostViewHolder(
                                 editListener(post)
                                 true
                             }
-
                             R.id.remove -> {
                                 removeListener(post)
                                 true
                             }
-
                             else -> false
                         }
                     }
                 }.show()
             }
+
+            val videoUrl = extractVideoUrl(post.content)
+            if (videoUrl == null) {
+                videoContainer.visibility = View.GONE
+            } else {
+                videoContainer.visibility = View.VISIBLE
+                videoContainer.setOnClickListener {
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(videoUrl))
+                    it.context.startActivity(intent)
+                }
+            }
         }
+    }
+
+    private fun extractVideoUrl(text: String): String? {
+        val regex = Regex("https?://(www\\.)?rutube\\.ru/video/\\S+")
+        return regex.find(text)?.value
     }
 }
