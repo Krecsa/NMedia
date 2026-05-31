@@ -2,7 +2,6 @@ package ru.netology.nmedia.activity
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -11,7 +10,6 @@ import androidx.core.view.WindowInsetsCompat
 import ru.netology.nmedia.R
 import ru.netology.nmedia.adapter.PostsAdapter
 import ru.netology.nmedia.databinding.ActivityMainBinding
-import ru.netology.nmedia.util.AndroidUtils
 import ru.netology.nmedia.viewmodel.PostViewModel
 
 class MainActivity : AppCompatActivity() {
@@ -19,8 +17,14 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private val viewModel: PostViewModel by viewModels()
 
-    private val newPostLauncher = registerForActivityResult(NewPostResultContract()) { result: String? ->
-        result?.let { viewModel.savePost(it) }
+    private val newPostLauncher = registerForActivityResult(NewPostResultContract()) { result ->
+        result?.let { (id, content) ->
+            if (id == 0L) {
+                viewModel.savePost(content)
+            } else {
+                viewModel.updatePost(id, content)
+            }
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,7 +49,9 @@ class MainActivity : AppCompatActivity() {
                 startActivity(Intent.createChooser(intent, getString(R.string.description_post_share)))
             },
             removeListener = { viewModel.removeById(it.id) },
-            editListener = { viewModel.edit(it) }
+            editListener = { post ->
+                newPostLauncher.launch(post.id)
+            }
         )
 
         binding.list.adapter = adapter
@@ -53,36 +59,8 @@ class MainActivity : AppCompatActivity() {
             adapter.submitList(posts)
         }
 
-        viewModel.edited.observe(this) { post ->
-            if (post.id != 0L) {
-                binding.content.setText(post.content)
-                binding.content.requestFocus()
-                AndroidUtils.showKeyboard(binding.content)
-                binding.editGroup.visibility = View.VISIBLE
-            } else {
-                binding.content.setText("")
-                binding.editGroup.visibility = View.GONE
-            }
-        }
-
-        binding.cancel.setOnClickListener {
-            viewModel.cancelEdit()
-            binding.content.setText("")
-            binding.content.clearFocus()
-            AndroidUtils.hideKeyboard(binding.content)
-        }
-
-        binding.save.setOnClickListener {
-            val content = binding.content.text.toString()
-            if (content.isBlank()) return@setOnClickListener
-            viewModel.savePost(content)
-            binding.content.setText("")
-            binding.content.clearFocus()
-            AndroidUtils.hideKeyboard(binding.content)
-        }
-
         binding.fab.setOnClickListener {
-            newPostLauncher.launch(Unit)
+            newPostLauncher.launch(0L)
         }
     }
 }

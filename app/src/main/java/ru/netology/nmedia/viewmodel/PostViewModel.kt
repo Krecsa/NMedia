@@ -18,6 +18,9 @@ class PostViewModel : ViewModel() {
     fun removeById(id: Long) = repository.removeById(id)
     fun edit(post: Post) { edited.value = post }
     fun cancelEdit() { edited.value = empty }
+    fun updatePost(id: Long, content: String) {
+        repository.updatePost(id, content)
+    }
 
     fun savePost(content: String) {
         val post = edited.value ?: return

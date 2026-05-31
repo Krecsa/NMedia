@@ -126,4 +126,10 @@ class PostRepositoryInMemoryImpl : PostRepository {
         }
         data.value = posts
     }
+    override fun updatePost(id: Long, content: String) {
+        posts = posts.map {
+            if (it.id == id) it.copy(content = content) else it
+        }
+        data.value = posts
+    }
 }

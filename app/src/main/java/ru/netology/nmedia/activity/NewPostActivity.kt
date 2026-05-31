@@ -23,14 +23,23 @@ class NewPostActivity : AppCompatActivity() {
             insets
         }
 
+        val postId = intent.getLongExtra(NewPostResultContract.EXTRA_POST_ID, 0L)
+        val postContent = intent.getStringExtra(Intent.EXTRA_TEXT)
+
+        if (postId != 0L && !postContent.isNullOrBlank()) {
+            binding.edit.setText(postContent)
+        }
+
         AndroidUtils.showKeyboard(binding.edit)
 
         binding.ok.setOnClickListener {
             if (binding.edit.text.isNullOrBlank()) {
                 setResult(Activity.RESULT_CANCELED)
             } else {
-                val intent = Intent()
-                intent.putExtra(Intent.EXTRA_TEXT, binding.edit.text.toString())
+                val intent = Intent().apply {
+                    putExtra(NewPostResultContract.EXTRA_POST_ID, postId)
+                    putExtra(Intent.EXTRA_TEXT, binding.edit.text.toString())
+                }
                 setResult(Activity.RESULT_OK, intent)
             }
             finish()
