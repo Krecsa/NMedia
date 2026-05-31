@@ -84,17 +84,21 @@
         app:barrierDirection="bottom"
         app:constraint_referenced_ids="content" />
 
-    <com.google.android.material.checkbox.MaterialCheckBox
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/like"
-        style="@style/Widget.AppTheme.LikeCheckBox"
+        style="@style/Widget.AppTheme.LikeButton"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
+        android:minHeight="0dp"
+        android:minWidth="0dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/common_spacing"
         android:contentDescription="@string/description_post_like"
-        app:buttonTint="@color/like_color_selector"
+        android:checkable="true"
+        app:iconTint="@color/like_color_selector"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/footer"
-        android:button="@drawable/ic_like_selector"
+        app:icon="@drawable/ic_like_selector"
         tools:text="10"/>
 
 
