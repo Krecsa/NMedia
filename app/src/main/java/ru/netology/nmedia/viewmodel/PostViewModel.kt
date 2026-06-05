@@ -4,13 +4,13 @@ import androidx.lifecycle.MutableLiveData
 import android.app.Application
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.repository.PostRepository
-import ru.netology.nmedia.repository.PostRepositorySharedPrefsImpl
+import ru.netology.nmedia.repository.PostRepositoryFileImpl
 import androidx.lifecycle.AndroidViewModel
 
 private val empty = Post(id = 0L, author = "", content = "", published = "", likes = 0, shares = 0, likedByMe = false)
 
 class PostViewModel(application: Application) : AndroidViewModel(application) {
-    private val repository: PostRepository = PostRepositorySharedPrefsImpl(application)
+    private val repository: PostRepository = PostRepositoryFileImpl(application)
     val data = repository.getAll()
     val edited = MutableLiveData(empty)
 
