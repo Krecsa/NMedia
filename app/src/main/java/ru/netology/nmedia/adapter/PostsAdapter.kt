@@ -18,12 +18,14 @@ typealias LikeListener = (Post) -> Unit
 typealias ShareListener = (Post) -> Unit
 typealias RemoveListener = (Post) -> Unit
 typealias EditListener = (Post) -> Unit
+typealias PostClickListener = (Post) -> Unit
 
 class PostsAdapter(
     private val likeListener: LikeListener,
     private val shareListener: ShareListener,
     private val removeListener: RemoveListener,
-    private val editListener: EditListener
+    private val editListener: EditListener,
+    private val postClickListener: PostClickListener
 ) : ListAdapter<Post, PostViewHolder>(PostDiffCallback()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
         val binding = CardPostBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -32,7 +34,8 @@ class PostsAdapter(
             likeListener,
             shareListener,
             removeListener,
-            editListener
+            editListener,
+            postClickListener
         )
     }
 
@@ -52,7 +55,8 @@ class PostViewHolder(
     private val likeListener: LikeListener,
     private val shareListener: ShareListener,
     private val removeListener: RemoveListener,
-    private val editListener: EditListener
+    private val editListener: EditListener,
+    private val postClickListener: PostClickListener
 ) : RecyclerView.ViewHolder(binding.root) {
 
     fun bind(post: Post) {
@@ -99,6 +103,10 @@ class PostViewHolder(
                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(videoUrl))
                     it.context.startActivity(intent)
                 }
+            }
+
+            root.setOnClickListener {
+                postClickListener(post)
             }
         }
     }

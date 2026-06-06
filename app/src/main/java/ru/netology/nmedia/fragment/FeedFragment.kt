@@ -1,5 +1,6 @@
 package ru.netology.nmedia.fragment
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,8 +12,6 @@ import ru.netology.nmedia.R
 import ru.netology.nmedia.adapter.PostsAdapter
 import ru.netology.nmedia.databinding.FragmentFeedBinding
 import ru.netology.nmedia.viewmodel.PostViewModel
-import androidx.lifecycle.distinctUntilChanged
-import android.content.Intent
 
 class FeedFragment : Fragment() {
 
@@ -52,15 +51,17 @@ class FeedFragment : Fragment() {
                     putString("content", post.content)
                 }
                 findNavController().navigate(R.id.action_feedFragment_to_newPostFragment, bundle)
+            },
+            postClickListener = { post ->
+                val bundle = Bundle().apply {
+                    putLong("postId", post.id)
+                }
+                findNavController().navigate(R.id.action_feedFragment_to_postFragment, bundle)
             }
         )
 
         binding.list.adapter = adapter
         viewModel.data.observe(viewLifecycleOwner) { posts ->
-            adapter.submitList(posts)
-        }
-
-        viewModel.data.distinctUntilChanged().observe(viewLifecycleOwner) { posts ->
             adapter.submitList(posts)
         }
 
