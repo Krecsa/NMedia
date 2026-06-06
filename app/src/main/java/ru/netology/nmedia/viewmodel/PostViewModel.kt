@@ -24,11 +24,24 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun savePost(content: String) {
-        val post = edited.value ?: return
-        val trimmed = content.trim()
-        if (post.content != trimmed) {
-            repository.save(post.copy(content = trimmed))
+        val post = edited.value
+        if (post != null && post.id != 0L) {
+            val trimmed = content.trim()
+            if (post.content != trimmed) {
+                repository.save(post.copy(content = trimmed))
+            }
+            edited.value = empty
+        } else {
+            val newPost = Post(
+                id = 0L,
+                author = "Нетология. Университет интернет-профессий будущего",
+                content = content,
+                published = "только что",
+                likes = 0,
+                likedByMe = false,
+                shares = 0
+            )
+            repository.save(newPost)
         }
-        edited.value = empty
     }
 }
