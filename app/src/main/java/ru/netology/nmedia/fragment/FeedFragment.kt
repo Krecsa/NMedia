@@ -12,6 +12,7 @@ import ru.netology.nmedia.R
 import ru.netology.nmedia.adapter.PostsAdapter
 import ru.netology.nmedia.databinding.FragmentFeedBinding
 import ru.netology.nmedia.viewmodel.PostViewModel
+import androidx.core.view.isVisible
 
 class FeedFragment : Fragment() {
 
@@ -61,12 +62,24 @@ class FeedFragment : Fragment() {
         )
 
         binding.list.adapter = adapter
-        viewModel.data.observe(viewLifecycleOwner) { posts ->
-            adapter.submitList(posts)
+
+        viewModel.data.observe(viewLifecycleOwner) { state ->
+            adapter.submitList(state.posts)
+            binding.progress.isVisible = state.loading
+            binding.errorGroup.isVisible = state.error
+            binding.emptyText.isVisible = state.empty
+        }
+
+        viewModel.postCreated.observe(viewLifecycleOwner) {
+            findNavController().navigateUp()
         }
 
         binding.fab.setOnClickListener {
             findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)
+        }
+
+        binding.retryButton.setOnClickListener {
+            viewModel.loadPosts()
         }
     }
 

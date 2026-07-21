@@ -8,5 +8,8 @@
     <string name="description_post_share">Share</string>
     <string name="content_is_blank_error">Post cannot be empty</string>
     <string name="description_post_save">Save</string>
+    <string name="empty_posts">There are no posts</string>
+    <string name="error_loading">Download error</string>
+    <string name="retry_loading">Repeat</string>
 
 </resources>

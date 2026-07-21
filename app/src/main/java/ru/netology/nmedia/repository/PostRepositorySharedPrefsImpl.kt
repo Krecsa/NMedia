@@ -35,7 +35,7 @@ class PostRepositorySharedPrefsImpl(context: Context) : PostRepository {
         prefs.edit().putString(KEY_POSTS, gson.toJson(posts)).apply()
     }
 
-    override fun getAll(): LiveData<List<Post>> = data
+    override fun getAll(): List<Post> = data.value ?: emptyList()
 
     override fun likeById(id: Long) {
         posts = posts.map {

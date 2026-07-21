@@ -9,4 +9,7 @@
     <string name="description_post_share">Репост</string>
     <string name="content_is_blank_error">Пост не может быть пустым</string>
     <string name="description_post_save">Сохранить</string>
+    <string name="empty_posts">Нет постов</string>
+    <string name="error_loading">Ошибка загрузки</string>
+    <string name="retry_loading">Повторить</string>
 </resources>

@@ -48,9 +48,8 @@ class PostFragment : Fragment() {
             return
         }
 
-        // Наблюдаем за списком постов, чтобы найти наш пост
-        viewModel.data.observe(viewLifecycleOwner) { posts ->
-            currentPost = posts.find { it.id == postId }
+        viewModel.data.observe(viewLifecycleOwner) { state ->
+            currentPost = state.posts.find { it.id == postId }
             currentPost?.let { bindPost(it) }
         }
     }
