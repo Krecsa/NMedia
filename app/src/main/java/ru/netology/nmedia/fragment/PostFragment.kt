@@ -57,7 +57,7 @@ class PostFragment : Fragment() {
     private fun bindPost(post: Post) {
         with(binding) {
             author.text = post.author
-            published.text = post.published
+            published.text = post.published.toString()
             content.text = post.content
             like.isChecked = post.likedByMe
             like.text = formatCount(post.likes)

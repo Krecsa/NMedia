@@ -13,6 +13,10 @@ import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.formatCount
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.DiffUtil
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
 
 typealias LikeListener = (Post) -> Unit
 typealias ShareListener = (Post) -> Unit
@@ -61,8 +65,11 @@ class PostViewHolder(
 
     fun bind(post: Post) {
         with(binding) {
-            author.text = post.author
-            published.text = post.published
+
+            val dateFormat = SimpleDateFormat("dd MMMM в HH:mm", Locale("ru"))
+            dateFormat.timeZone = TimeZone.getTimeZone("UTC+3")
+            published.text = dateFormat.format(Date(post.published * 1000))
+
             content.text = post.content
             like.isChecked = post.likedByMe
             like.text = formatCount(post.likes)

@@ -31,7 +31,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun loadPosts() {
-        _data.value = FeedState(loading = true)
+        _data.postValue(FeedState(loading = true))
         thread {
             try {
                 val posts = repository.getAll()
@@ -111,7 +111,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
                     id = 0L,
                     author = "Me",
                     content = content,
-                    published = "now",
+                    published = 0L,
                     likes = 0,
                     likedByMe = false,
                     shares = 0
