@@ -7,6 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.CardPostBinding
 import ru.netology.nmedia.dto.Post
@@ -65,6 +67,7 @@ class PostViewHolder(
 
     fun bind(post: Post) {
         with(binding) {
+            author.text = post.author
 
             val dateFormat = SimpleDateFormat("dd MMMM в HH:mm", Locale("ru"))
             dateFormat.timeZone = TimeZone.getTimeZone("UTC+3")
@@ -101,6 +104,17 @@ class PostViewHolder(
                 }.show()
             }
 
+            if (!post.authorAvatar.isNullOrBlank()) {
+                Glide.with(itemView.context)
+                    .load("http://10.0.2.2:9999/avatars/${post.authorAvatar}")
+                    .placeholder(R.drawable.ic_netology_48dp)
+                    .error(R.drawable.ic_netology_48dp)
+                    .transform(CircleCrop())
+                    .into(avatar)
+            } else {
+                avatar.setImageResource(R.drawable.ic_netology_48dp)
+            }
+
             val videoUrl = extractVideoUrl(post.content)
             if (videoUrl == null) {
                 videoContainer.visibility = View.GONE
@@ -110,6 +124,18 @@ class PostViewHolder(
                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(videoUrl))
                     it.context.startActivity(intent)
                 }
+            }
+
+            if (post.attachment != null && post.attachment.type == "IMAGE") {
+                attachmentContainer.visibility = View.VISIBLE
+                Glide.with(itemView.context)
+                    .load("http://10.0.2.2:9999/images/${post.attachment.url}")
+                    .placeholder(R.drawable.ic_play_video)
+                    .override(48, 48)
+                    .error(R.drawable.ic_error_100dp)
+                    .into(attachmentImage)
+            } else {
+                attachmentContainer.visibility = View.GONE
             }
 
             root.setOnClickListener {

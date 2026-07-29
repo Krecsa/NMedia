@@ -10,4 +10,6 @@ data class Post(
     val shares: Int = 0,
     val sharedByMe: Boolean = false,
     val views: Int = 0,
+    val authorAvatar: String? = null,
+    val attachment: Attachment? = null
 )
