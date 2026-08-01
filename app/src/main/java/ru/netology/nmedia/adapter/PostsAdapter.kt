@@ -110,6 +110,7 @@ class PostViewHolder(
                     .placeholder(R.drawable.ic_netology_48dp)
                     .error(R.drawable.ic_netology_48dp)
                     .transform(CircleCrop())
+                    .timeout(10_000)
                     .into(avatar)
             } else {
                 avatar.setImageResource(R.drawable.ic_netology_48dp)
@@ -131,8 +132,8 @@ class PostViewHolder(
                 Glide.with(itemView.context)
                     .load("http://10.0.2.2:9999/images/${post.attachment.url}")
                     .placeholder(R.drawable.ic_play_video)
-                    .override(48, 48)
                     .error(R.drawable.ic_error_100dp)
+                    .timeout(10_000)
                     .into(attachmentImage)
             } else {
                 attachmentContainer.visibility = View.GONE
