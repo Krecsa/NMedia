@@ -81,7 +81,6 @@
         app:layout_constraintTop_toBottomOf="@id/header"
         tools:text="@sample/posts.json/data/content" />
 
-    <!-- Видео контейнер (из предыдущего ДЗ) -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/videoContainer"
         android:layout_width="match_parent"
@@ -118,7 +117,6 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- Вложение (Attachment) для картинок - НОВЫЙ БЛОК ДЛЯ ЗАДАНИЯ 3 -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/attachmentContainer"
         android:layout_width="match_parent"
@@ -135,6 +133,8 @@
             android:layout_height="200dp"
             android:scaleType="centerCrop"
             android:src="@drawable/video_placeholder"
+            android:clickable="true"
+            android:focusable="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

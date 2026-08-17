@@ -2,10 +2,12 @@ package ru.netology.nmedia.adapter
 
 import android.content.Intent
 import android.net.Uri
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.PopupMenu
+import androidx.navigation.NavController
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
@@ -31,7 +33,8 @@ class PostsAdapter(
     private val shareListener: ShareListener,
     private val removeListener: RemoveListener,
     private val editListener: EditListener,
-    private val postClickListener: PostClickListener
+    private val postClickListener: PostClickListener,
+    private val navController: NavController
 ) : ListAdapter<Post, PostViewHolder>(PostDiffCallback()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
         val binding = CardPostBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -41,7 +44,8 @@ class PostsAdapter(
             shareListener,
             removeListener,
             editListener,
-            postClickListener
+            postClickListener,
+            navController
         )
     }
 
@@ -62,7 +66,8 @@ class PostViewHolder(
     private val shareListener: ShareListener,
     private val removeListener: RemoveListener,
     private val editListener: EditListener,
-    private val postClickListener: PostClickListener
+    private val postClickListener: PostClickListener,
+    private val navController: NavController
 ) : RecyclerView.ViewHolder(binding.root) {
 
     fun bind(post: Post) {
@@ -129,12 +134,20 @@ class PostViewHolder(
 
             if (post.attachment != null && post.attachment.type == "IMAGE") {
                 attachmentContainer.visibility = View.VISIBLE
+                val fullUrl = "http://10.0.2.2:9999/media/${post.attachment.url}"
                 Glide.with(itemView.context)
-                    .load("http://10.0.2.2:9999/images/${post.attachment.url}")
+                    .load(fullUrl)
                     .placeholder(R.drawable.ic_play_video)
                     .error(R.drawable.ic_error_100dp)
                     .timeout(10_000)
                     .into(attachmentImage)
+
+                attachmentImage.setOnClickListener {
+                    val bundle = Bundle().apply {
+                        putString("photoUrl", fullUrl)
+                    }
+                    navController.navigate(R.id.photoFragment, bundle)
+                }
             } else {
                 attachmentContainer.visibility = View.GONE
             }

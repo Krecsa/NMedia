@@ -35,6 +35,8 @@ class FeedFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val navController = findNavController()
+
         val adapter = PostsAdapter(
             likeListener = { viewModel.likeById(it.id) },
             shareListener = { post ->
@@ -51,14 +53,15 @@ class FeedFragment : Fragment() {
                     putLong("postId", post.id)
                     putString("content", post.content)
                 }
-                findNavController().navigate(R.id.action_feedFragment_to_newPostFragment, bundle)
+                navController.navigate(R.id.action_feedFragment_to_newPostFragment, bundle)
             },
             postClickListener = { post ->
                 val bundle = Bundle().apply {
                     putLong("postId", post.id)
                 }
-                findNavController().navigate(R.id.action_feedFragment_to_postFragment, bundle)
-            }
+                navController.navigate(R.id.action_feedFragment_to_postFragment, bundle)
+            },
+            navController = navController
         )
 
         binding.list.adapter = adapter
