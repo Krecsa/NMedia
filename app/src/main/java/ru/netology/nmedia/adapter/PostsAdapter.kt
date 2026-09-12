@@ -1,52 +1,30 @@
 package ru.netology.nmedia.adapter
 
-import android.content.Intent
-import android.net.Uri
-import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.widget.PopupMenu
-import androidx.navigation.NavController
+import android.widget.PopupMenu
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.CircleCrop
+import ru.netology.nmedia.BuildConfig
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.CardPostBinding
 import ru.netology.nmedia.dto.Post
-import ru.netology.nmedia.formatCount
-import androidx.recyclerview.widget.ListAdapter
-import androidx.recyclerview.widget.DiffUtil
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
-import java.util.TimeZone
+import ru.netology.nmedia.view.loadCircleCrop
 
-typealias LikeListener = (Post) -> Unit
-typealias ShareListener = (Post) -> Unit
-typealias RemoveListener = (Post) -> Unit
-typealias EditListener = (Post) -> Unit
-typealias PostClickListener = (Post) -> Unit
+interface OnInteractionListener {
+    fun onLike(post: Post) {}
+    fun onEdit(post: Post) {}
+    fun onRemove(post: Post) {}
+    fun onShare(post: Post) {}
+}
 
 class PostsAdapter(
-    private val likeListener: LikeListener,
-    private val shareListener: ShareListener,
-    private val removeListener: RemoveListener,
-    private val editListener: EditListener,
-    private val postClickListener: PostClickListener,
-    private val navController: NavController
+    private val onInteractionListener: OnInteractionListener,
 ) : ListAdapter<Post, PostViewHolder>(PostDiffCallback()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
         val binding = CardPostBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return PostViewHolder(
-            binding,
-            likeListener,
-            shareListener,
-            removeListener,
-            editListener,
-            postClickListener,
-            navController
-        )
+        return PostViewHolder(binding, onInteractionListener)
     }
 
     override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
@@ -55,111 +33,57 @@ class PostsAdapter(
     }
 }
 
-class PostDiffCallback : DiffUtil.ItemCallback<Post>() {
-    override fun areItemsTheSame(oldItem: Post, newItem: Post) = oldItem.id == newItem.id
-    override fun areContentsTheSame(oldItem: Post, newItem: Post) = oldItem == newItem
-}
-
 class PostViewHolder(
     private val binding: CardPostBinding,
-    private val likeListener: LikeListener,
-    private val shareListener: ShareListener,
-    private val removeListener: RemoveListener,
-    private val editListener: EditListener,
-    private val postClickListener: PostClickListener,
-    private val navController: NavController
+    private val onInteractionListener: OnInteractionListener,
 ) : RecyclerView.ViewHolder(binding.root) {
 
     fun bind(post: Post) {
-        with(binding) {
+        binding.apply {
             author.text = post.author
-
-            val dateFormat = SimpleDateFormat("dd MMMM в HH:mm", Locale("ru"))
-            dateFormat.timeZone = TimeZone.getTimeZone("UTC+3")
-            published.text = dateFormat.format(Date(post.published * 1000))
-
+            published.text = post.published.toString()
             content.text = post.content
+            avatar.loadCircleCrop("${BuildConfig.BASE_URL}/avatars/${post.authorAvatar}")
             like.isChecked = post.likedByMe
-            like.text = formatCount(post.likes)
-            like.setOnClickListener {
-                likeListener(post)
-            }
-
-            share.text = formatCount(post.shares)
-            share.setOnClickListener {
-                shareListener(post)
-            }
+            like.text = "${post.likes}"
 
             menu.setOnClickListener {
                 PopupMenu(it.context, it).apply {
-                    inflate(R.menu.menu_post)
+                    inflate(R.menu.options_post)
                     setOnMenuItemClickListener { item ->
                         when (item.itemId) {
-                            R.id.edit -> {
-                                editListener(post)
-                                true
-                            }
                             R.id.remove -> {
-                                removeListener(post)
+                                onInteractionListener.onRemove(post)
                                 true
                             }
+                            R.id.edit -> {
+                                onInteractionListener.onEdit(post)
+                                true
+                            }
+
                             else -> false
                         }
                     }
                 }.show()
             }
 
-            if (!post.authorAvatar.isNullOrBlank()) {
-                Glide.with(itemView.context)
-                    .load("http://10.0.2.2:9999/avatars/${post.authorAvatar}")
-                    .placeholder(R.drawable.ic_netology_48dp)
-                    .error(R.drawable.ic_netology_48dp)
-                    .transform(CircleCrop())
-                    .timeout(10_000)
-                    .into(avatar)
-            } else {
-                avatar.setImageResource(R.drawable.ic_netology_48dp)
+            like.setOnClickListener {
+                onInteractionListener.onLike(post)
             }
 
-            val videoUrl = extractVideoUrl(post.content)
-            if (videoUrl == null) {
-                videoContainer.visibility = View.GONE
-            } else {
-                videoContainer.visibility = View.VISIBLE
-                videoContainer.setOnClickListener {
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(videoUrl))
-                    it.context.startActivity(intent)
-                }
-            }
-
-            if (post.attachment != null && post.attachment.type == "IMAGE") {
-                attachmentContainer.visibility = View.VISIBLE
-                val fullUrl = "http://10.0.2.2:9999/media/${post.attachment.url}"
-                Glide.with(itemView.context)
-                    .load(fullUrl)
-                    .placeholder(R.drawable.ic_play_video)
-                    .error(R.drawable.ic_error_100dp)
-                    .timeout(10_000)
-                    .into(attachmentImage)
-
-                attachmentImage.setOnClickListener {
-                    val bundle = Bundle().apply {
-                        putString("photoUrl", fullUrl)
-                    }
-                    navController.navigate(R.id.photoFragment, bundle)
-                }
-            } else {
-                attachmentContainer.visibility = View.GONE
-            }
-
-            root.setOnClickListener {
-                postClickListener(post)
+            share.setOnClickListener {
+                onInteractionListener.onShare(post)
             }
         }
     }
+}
 
-    private fun extractVideoUrl(text: String): String? {
-        val regex = Regex("https?://(www\\.)?rutube\\.ru/video/\\S+")
-        return regex.find(text)?.value
+class PostDiffCallback : DiffUtil.ItemCallback<Post>() {
+    override fun areItemsTheSame(oldItem: Post, newItem: Post): Boolean {
+        return oldItem.id == newItem.id
+    }
+
+    override fun areContentsTheSame(oldItem: Post, newItem: Post): Boolean {
+        return oldItem == newItem
     }
 }

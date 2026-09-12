@@ -12,4 +12,9 @@
     <string name="empty_posts">Нет постов</string>
     <string name="error_loading">Ошибка загрузки</string>
     <string name="retry_loading">Повторить</string>
+    <string name="google_play_unavailable">Google Play Services недоступен</string>
+    <string name="channel_remote_name">Удалённые уведомления</string>
+    <string name="channel_remote_description">Канал для push-уведомлений</string>
+    <string name="notification_user_liked">%1$s оценил вашу публикацию в посте %2$s</string>
+    <string name="menu_save">Сохранить</string>
 </resources>

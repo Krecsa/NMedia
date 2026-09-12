@@ -7,21 +7,23 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.nmedia.R
+import ru.netology.nmedia.adapter.OnInteractionListener
 import ru.netology.nmedia.adapter.PostsAdapter
 import ru.netology.nmedia.databinding.FragmentFeedBinding
+import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.viewmodel.PostViewModel
 
+@AndroidEntryPoint
 class FeedFragment : Fragment() {
 
     private var _binding: FragmentFeedBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: PostViewModel by viewModels(
-        ownerProducer = ::requireParentFragment
-    )
+    private val viewModel: PostViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,40 +39,44 @@ class FeedFragment : Fragment() {
 
         val navController = findNavController()
 
-        val adapter = PostsAdapter(
-            likeListener = { viewModel.likeById(it.id) },
-            shareListener = { post ->
+        val adapter = PostsAdapter(object : OnInteractionListener {
+            override fun onLike(post: Post) {
+                viewModel.likeById(post.id)
+            }
+
+            override fun onShare(post: Post) {
                 val intent = Intent(Intent.ACTION_SEND).apply {
                     type = "text/plain"
                     putExtra(Intent.EXTRA_TEXT, post.content)
                 }
-                startActivity(Intent.createChooser(intent, getString(R.string.description_post_share)))
-                viewModel.shareById(post.id)
-            },
-            removeListener = { viewModel.removeById(it.id) },
-            editListener = { post ->
+                startActivity(
+                    Intent.createChooser(intent, getString(R.string.description_post_share))
+                )
+            }
+
+            override fun onRemove(post: Post) {
+                viewModel.removeById(post.id)
+            }
+
+            override fun onEdit(post: Post) {
                 val bundle = Bundle().apply {
                     putLong("postId", post.id)
                     putString("content", post.content)
                 }
                 navController.navigate(R.id.action_feedFragment_to_newPostFragment, bundle)
-            },
-            postClickListener = { post ->
-                val bundle = Bundle().apply {
-                    putLong("postId", post.id)
-                }
-                navController.navigate(R.id.action_feedFragment_to_postFragment, bundle)
-            },
-            navController = navController
-        )
+            }
+        })
 
         binding.list.adapter = adapter
 
-        viewModel.data.observe(viewLifecycleOwner) { state ->
-            adapter.submitList(state.posts)
+        viewModel.data.observe(viewLifecycleOwner) { posts ->
+            adapter.submitList(posts)
+            binding.emptyText.isVisible = posts.isEmpty()
+        }
+
+        viewModel.dataState.observe(viewLifecycleOwner) { state ->
             binding.progress.isVisible = state.loading
             binding.errorGroup.isVisible = state.error
-            binding.emptyText.isVisible = state.empty
         }
 
         viewModel.postCreated.observe(viewLifecycleOwner) {

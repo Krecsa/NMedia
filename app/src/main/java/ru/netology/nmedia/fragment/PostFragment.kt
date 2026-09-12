@@ -10,22 +10,21 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.FragmentPostBinding
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.formatCount
-import ru.netology.nmedia.util.AndroidUtils
 import ru.netology.nmedia.viewmodel.PostViewModel
+import androidx.fragment.app.activityViewModels
 
+@AndroidEntryPoint
 class PostFragment : Fragment() {
 
     private var _binding: FragmentPostBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: PostViewModel by viewModels(
-        ownerProducer = ::requireParentFragment
-    )
+    private val viewModel: PostViewModel by activityViewModels()
 
     private var currentPost: Post? = null
     private var postId: Long = 0L
@@ -48,8 +47,8 @@ class PostFragment : Fragment() {
             return
         }
 
-        viewModel.data.observe(viewLifecycleOwner) { state ->
-            currentPost = state.posts.find { it.id == postId }
+        viewModel.data.observe(viewLifecycleOwner) { posts ->
+            currentPost = posts.find { it.id == postId }
             currentPost?.let { bindPost(it) }
         }
     }
@@ -57,7 +56,7 @@ class PostFragment : Fragment() {
     private fun bindPost(post: Post) {
         with(binding) {
             author.text = post.author
-            published.text = post.published.toString()
+            published.text = post.published
             content.text = post.content
             like.isChecked = post.likedByMe
             like.text = formatCount(post.likes)
@@ -65,14 +64,12 @@ class PostFragment : Fragment() {
                 viewModel.likeById(post.id)
             }
 
-            share.text = formatCount(post.shares)
             share.setOnClickListener {
                 val intent = Intent(Intent.ACTION_SEND).apply {
                     type = "text/plain"
                     putExtra(Intent.EXTRA_TEXT, post.content)
                 }
                 startActivity(Intent.createChooser(intent, getString(R.string.description_post_share)))
-                viewModel.shareById(post.id)
             }
 
             menu.setOnClickListener {
