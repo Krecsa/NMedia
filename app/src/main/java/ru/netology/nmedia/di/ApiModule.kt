@@ -9,6 +9,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import ru.netology.nmedia.BuildConfig
+import ru.netology.nmedia.api.ApiService
 import ru.netology.nmedia.api.PostsApiService
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
@@ -42,4 +43,9 @@ object ApiModule {
     @Singleton
     fun providePostsApiService(retrofit: Retrofit): PostsApiService =
         retrofit.create(PostsApiService::class.java)
+
+    @Provides
+    @Singleton
+    fun provideApiService(retrofit: Retrofit): ApiService =
+        retrofit.create(ApiService::class.java)
 }

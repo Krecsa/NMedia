@@ -5,7 +5,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.repository.PostRepository
 import ru.netology.nmedia.utils.SingleLiveEvent
@@ -15,7 +17,8 @@ private val empty = Post()
 
 @HiltViewModel
 class PostViewModel @Inject constructor(
-    private val repository: PostRepository
+    private val repository: PostRepository,
+    private val auth: AppAuth,
 ) : ViewModel() {
 
     val data: LiveData<List<Post>> = repository.data
@@ -29,7 +32,11 @@ class PostViewModel @Inject constructor(
     val postCreated: LiveData<Unit> = _postCreated
 
     init {
-        loadPosts()
+        viewModelScope.launch {
+            auth.authStateFlow.collectLatest {
+                loadPosts()
+            }
+        }
     }
 
     fun loadPosts() = viewModelScope.launch {
