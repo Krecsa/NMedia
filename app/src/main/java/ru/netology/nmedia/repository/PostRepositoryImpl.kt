@@ -1,16 +1,22 @@
 package ru.netology.nmedia.repository
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.asLiveData
-import androidx.lifecycle.map
+import androidx.paging.ExperimentalPagingApi
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.map
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
-import ru.netology.nmedia.api.PostsApiService
+import ru.netology.nmedia.api.ApiService
 import ru.netology.nmedia.dao.PostDao
+import ru.netology.nmedia.dao.PostRemoteKeyDao
+import ru.netology.nmedia.db.AppDb
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.entity.PostEntity
 import ru.netology.nmedia.entity.toDto
-import ru.netology.nmedia.entity.toEntity
 import ru.netology.nmedia.error.ApiError
 import ru.netology.nmedia.error.NetworkError
 import ru.netology.nmedia.error.UnknownError
@@ -21,28 +27,22 @@ import javax.inject.Singleton
 @Singleton
 class PostRepositoryImpl @Inject constructor(
     private val dao: PostDao,
-    private val service: PostsApiService
+    private val remoteKeyDao: PostRemoteKeyDao,
+    private val service: ApiService,
+    private val db: AppDb,
 ) : PostRepository {
 
-    override val data: LiveData<List<Post>> =
-        dao.getAll().asLiveData(Dispatchers.Default).map { entities: List<PostEntity> ->
-            entities.toDto()
-        }
-
-    override suspend fun getAll() = withContext(Dispatchers.IO) {
-        try {
-            val response = service.getAll()
-            if (!response.isSuccessful) {
-                throw ApiError(response.code(), response.message())
-            }
-            val body = response.body() ?: throw ApiError(response.code(), response.message())
-            dao.insert(body.toEntity())
-        } catch (e: IOException) {
-            throw NetworkError
-        } catch (e: Exception) {
-            throw UnknownError
-        }
-    }
+    @OptIn(ExperimentalPagingApi::class)
+    override val data: Flow<PagingData<Post>> = Pager(
+        config = PagingConfig(
+            pageSize = 5,
+            enablePlaceholders = false,
+        ),
+        remoteMediator = PostRemoteMediator(service, db, dao, remoteKeyDao),
+        pagingSourceFactory = dao::pagingSource,
+    ).flow
+        .map { pagingData -> pagingData.map(PostEntity::toDto) }
+        .flowOn(Dispatchers.Default)
 
     override suspend fun save(post: Post) = withContext(Dispatchers.IO) {
         try {
@@ -64,14 +64,11 @@ class PostRepositoryImpl @Inject constructor(
             dao.removeById(id)
             val response = service.removeById(id)
             if (!response.isSuccessful) {
-                getAll()
                 throw ApiError(response.code(), response.message())
             }
         } catch (e: IOException) {
-            getAll()
             throw NetworkError
         } catch (e: Exception) {
-            getAll()
             throw UnknownError
         }
     }
@@ -81,7 +78,7 @@ class PostRepositoryImpl @Inject constructor(
             val post = dao.getById(id) ?: throw UnknownError
             val updatedPost = post.toDto().copy(
                 likedByMe = !post.likedByMe,
-                likes = if (post.likedByMe) post.likes - 1 else post.likes + 1
+                likes = if (post.likedByMe) post.likes - 1 else post.likes + 1,
             )
             dao.insert(PostEntity.fromDto(updatedPost))
 
@@ -92,14 +89,11 @@ class PostRepositoryImpl @Inject constructor(
             }
 
             if (!response.isSuccessful) {
-                getAll()
                 throw ApiError(response.code(), response.message())
             }
         } catch (e: IOException) {
-            getAll()
             throw NetworkError
         } catch (e: Exception) {
-            getAll()
             throw UnknownError
         }
     }

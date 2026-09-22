@@ -17,4 +17,7 @@
     <string name="channel_remote_description">Канал для push-уведомлений</string>
     <string name="notification_user_liked">%1$s оценил вашу публикацию в посте %2$s</string>
     <string name="menu_save">Сохранить</string>
+    <string name="sign_in">Войти</string>
+    <string name="sign_up">Зарегистрироваться</string>
+    <string name="sign_out">Выйти</string>
 </resources>

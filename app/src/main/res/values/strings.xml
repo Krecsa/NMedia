@@ -16,5 +16,8 @@
     <string name="channel_remote_description">Channel for push notifications</string>
     <string name="notification_user_liked">%1$s liked your post by %2$s</string>
     <string name="menu_save">Save</string>
+    <string name="sign_in">Sign in</string>
+    <string name="sign_up">Sign up</string>
+    <string name="sign_out">Sign out</string>
 
 </resources>

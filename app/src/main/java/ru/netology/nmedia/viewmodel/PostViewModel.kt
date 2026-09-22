@@ -4,8 +4,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.dto.Post
@@ -21,7 +23,7 @@ class PostViewModel @Inject constructor(
     private val auth: AppAuth,
 ) : ViewModel() {
 
-    val data: LiveData<List<Post>> = repository.data
+    val data: Flow<PagingData<Post>> = repository.data.cachedIn(viewModelScope)
 
     private val _dataState = MutableLiveData<FeedModelState>()
     val dataState: LiveData<FeedModelState> = _dataState
@@ -30,24 +32,6 @@ class PostViewModel @Inject constructor(
 
     private val _postCreated = SingleLiveEvent<Unit>()
     val postCreated: LiveData<Unit> = _postCreated
-
-    init {
-        viewModelScope.launch {
-            auth.authStateFlow.collectLatest {
-                loadPosts()
-            }
-        }
-    }
-
-    fun loadPosts() = viewModelScope.launch {
-        try {
-            _dataState.value = FeedModelState(loading = true)
-            repository.getAll()
-            _dataState.value = FeedModelState()
-        } catch (e: Exception) {
-            _dataState.value = FeedModelState(error = true)
-        }
-    }
 
     fun savePost(content: String) = viewModelScope.launch {
         try {
@@ -61,8 +45,8 @@ class PostViewModel @Inject constructor(
 
     fun updatePost(id: Long, content: String) = viewModelScope.launch {
         try {
-            val existing = repository.data.value?.find { it.id == id } ?: return@launch
-            repository.save(existing.copy(content = content))
+            val post = empty.copy(id = id, content = content)
+            repository.save(post)
             _postCreated.value = Unit
         } catch (e: Exception) {
             _dataState.value = FeedModelState(error = true)

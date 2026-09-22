@@ -8,8 +8,12 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.paging.LoadState
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import ru.netology.nmedia.R
 import ru.netology.nmedia.adapter.OnInteractionListener
 import ru.netology.nmedia.adapter.PostsAdapter
@@ -28,7 +32,7 @@ class FeedFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         _binding = FragmentFeedBinding.inflate(inflater, container, false)
         return binding.root
@@ -69,14 +73,17 @@ class FeedFragment : Fragment() {
 
         binding.list.adapter = adapter
 
-        viewModel.data.observe(viewLifecycleOwner) { posts ->
-            adapter.submitList(posts)
-            binding.emptyText.isVisible = posts.isEmpty()
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.data.collectLatest { pagingData ->
+                adapter.submitData(pagingData)
+            }
         }
 
-        viewModel.dataState.observe(viewLifecycleOwner) { state ->
-            binding.progress.isVisible = state.loading
-            binding.errorGroup.isVisible = state.error
+        viewLifecycleOwner.lifecycleScope.launch {
+            adapter.loadStateFlow.collectLatest { state ->
+                binding.progress.isVisible = state.refresh is LoadState.Loading
+                binding.errorGroup.isVisible = state.refresh is LoadState.Error
+            }
         }
 
         viewModel.postCreated.observe(viewLifecycleOwner) {
@@ -88,7 +95,7 @@ class FeedFragment : Fragment() {
         }
 
         binding.retryButton.setOnClickListener {
-            viewModel.loadPosts()
+            adapter.retry()
         }
     }
 

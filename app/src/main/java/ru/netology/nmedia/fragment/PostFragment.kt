@@ -8,7 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.nmedia.R
@@ -16,7 +16,6 @@ import ru.netology.nmedia.databinding.FragmentPostBinding
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.formatCount
 import ru.netology.nmedia.viewmodel.PostViewModel
-import androidx.fragment.app.activityViewModels
 
 @AndroidEntryPoint
 class PostFragment : Fragment() {
@@ -32,7 +31,7 @@ class PostFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         _binding = FragmentPostBinding.inflate(inflater, container, false)
         return binding.root
@@ -47,9 +46,8 @@ class PostFragment : Fragment() {
             return
         }
 
-        viewModel.data.observe(viewLifecycleOwner) { posts ->
-            currentPost = posts.find { it.id == postId }
-            currentPost?.let { bindPost(it) }
+        val initialPost = arguments?.let { args ->
+            currentPost
         }
     }
 

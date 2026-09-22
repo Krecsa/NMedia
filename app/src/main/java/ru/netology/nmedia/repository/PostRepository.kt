@@ -1,11 +1,11 @@
 package ru.netology.nmedia.repository
 
-import androidx.lifecycle.LiveData
+import androidx.paging.PagingData
+import kotlinx.coroutines.flow.Flow
 import ru.netology.nmedia.dto.Post
 
 interface PostRepository {
-    val data: LiveData<List<Post>>
-    suspend fun getAll()
+    val data: Flow<PagingData<Post>>
     suspend fun save(post: Post)
     suspend fun removeById(id: Long)
     suspend fun likeById(id: Long)

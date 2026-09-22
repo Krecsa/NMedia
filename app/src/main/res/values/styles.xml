@@ -16,5 +16,4 @@
     <style name="Widget.AppTheme.OptionsButton" parent="Widget.Material3.Button.TextButton.Icon">
         <item name="iconTint">?attr/colorControlNormal</item>
     </style>
-
 </resources>
