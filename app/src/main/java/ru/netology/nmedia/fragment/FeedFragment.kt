@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import ru.netology.nmedia.R
 import ru.netology.nmedia.adapter.OnInteractionListener
+import ru.netology.nmedia.adapter.PagingLoadStateAdapter
 import ru.netology.nmedia.adapter.PostsAdapter
 import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.databinding.FragmentFeedBinding
@@ -76,7 +77,10 @@ class FeedFragment : Fragment() {
             }
         })
 
-        binding.list.adapter = adapter
+        binding.list.adapter = adapter.withLoadStateHeaderAndFooter(
+            header = PagingLoadStateAdapter { adapter.retry() },
+            footer = PagingLoadStateAdapter { adapter.retry() },
+        )
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.data.collectLatest { pagingData ->
@@ -86,9 +90,9 @@ class FeedFragment : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             adapter.loadStateFlow.collectLatest { state ->
+                binding.swiperefresh.isRefreshing = state.refresh is LoadState.Loading
                 binding.progress.isVisible = state.refresh is LoadState.Loading
                 binding.errorGroup.isVisible = state.refresh is LoadState.Error
-                binding.swiperefresh.isRefreshing = state.refresh is LoadState.Loading
             }
         }
 

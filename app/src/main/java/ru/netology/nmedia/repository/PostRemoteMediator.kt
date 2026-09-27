@@ -90,9 +90,7 @@ class PostRemoteMediator(
                         }
                     }
 
-                    LoadType.PREPEND -> {
-                        return@withTransaction
-                    }
+                    LoadType.PREPEND -> Unit
 
                     LoadType.APPEND -> {
                         if (body.isNotEmpty()) {
