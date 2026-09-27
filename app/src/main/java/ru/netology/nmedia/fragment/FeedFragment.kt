@@ -17,12 +17,17 @@ import kotlinx.coroutines.launch
 import ru.netology.nmedia.R
 import ru.netology.nmedia.adapter.OnInteractionListener
 import ru.netology.nmedia.adapter.PostsAdapter
+import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.databinding.FragmentFeedBinding
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.viewmodel.PostViewModel
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class FeedFragment : Fragment() {
+
+    @Inject
+    lateinit var auth: AppAuth
 
     private var _binding: FragmentFeedBinding? = null
     private val binding get() = _binding!!
@@ -83,11 +88,22 @@ class FeedFragment : Fragment() {
             adapter.loadStateFlow.collectLatest { state ->
                 binding.progress.isVisible = state.refresh is LoadState.Loading
                 binding.errorGroup.isVisible = state.refresh is LoadState.Error
+                binding.swiperefresh.isRefreshing = state.refresh is LoadState.Loading
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            auth.authStateFlow.collectLatest {
+                adapter.refresh()
             }
         }
 
         viewModel.postCreated.observe(viewLifecycleOwner) {
-            findNavController().navigateUp()
+            adapter.refresh()
+        }
+
+        binding.swiperefresh.setOnRefreshListener {
+            adapter.refresh()
         }
 
         binding.fab.setOnClickListener {

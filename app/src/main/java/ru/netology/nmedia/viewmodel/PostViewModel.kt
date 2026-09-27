@@ -9,7 +9,6 @@ import androidx.paging.cachedIn
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
-import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.repository.PostRepository
 import ru.netology.nmedia.utils.SingleLiveEvent
@@ -20,7 +19,6 @@ private val empty = Post()
 @HiltViewModel
 class PostViewModel @Inject constructor(
     private val repository: PostRepository,
-    private val auth: AppAuth,
 ) : ViewModel() {
 
     val data: Flow<PagingData<Post>> = repository.data.cachedIn(viewModelScope)
