@@ -4,14 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/nav_host_fragment"
-        android:name="androidx.navigation.fragment.NavHostFragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:defaultNavHost="true"
-        app:navGraph="@navigation/nav_main" />
-
     <ru.netology.nmedia.ui.StatsView
         android:id="@+id/stats"
         android:layout_width="300dp"
@@ -19,9 +11,9 @@
         android:layout_gravity="center"
         app:lineWidth="20dp"
         app:fontSize="50dp"
-        app:color1="#FF0266"
-        app:color2="#FFDE03"
-        app:color3="#03DAC5"
-        app:color4="#6200EE" />
+        app:color1="@color/colorPrimary"
+        app:color2="@color/colorAccent"
+        app:color3="#FFDE03"
+        app:color4="#FF0266" />
 
 </FrameLayout>

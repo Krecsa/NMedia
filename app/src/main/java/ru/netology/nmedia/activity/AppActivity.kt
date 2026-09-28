@@ -21,6 +21,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.nmedia.R
 import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.databinding.ActivityAppBinding
+import ru.netology.nmedia.ui.StatsView
 import ru.netology.nmedia.viewmodel.AuthViewModel
 import javax.inject.Inject
 
@@ -53,6 +54,13 @@ class AppActivity : AppCompatActivity() {
 
         requestNotificationsPermission()
         checkGoogleApiAvailability()
+
+        findViewById<StatsView>(R.id.stats).data = listOf(
+            500F,
+            500F,
+            500F,
+            500F,
+        )
 
         viewModel.data.observe(this) {
             invalidateOptionsMenu()
