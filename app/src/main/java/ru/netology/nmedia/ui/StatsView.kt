@@ -1,5 +1,9 @@
 package ru.netology.nmedia.ui
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.animation.AnimatorSet
+import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
@@ -7,6 +11,7 @@ import android.graphics.PointF
 import android.graphics.RectF
 import android.util.AttributeSet
 import android.view.View
+import android.view.animation.LinearInterpolator
 import androidx.core.content.withStyledAttributes
 import ru.netology.nmedia.R
 import ru.netology.nmedia.utils.AndroidUtils
@@ -28,10 +33,15 @@ class StatsView @JvmOverloads constructor(
     private var fontSize = AndroidUtils.dp(context, 40F).toFloat()
     private var colors = emptyList<Int>()
 
+    private var progress = 0F
+    private var rotation = 0F
+
+    private var animatorSet: AnimatorSet? = null
+
     var data: List<Float> = emptyList()
         set(value) {
             field = value
-            invalidate()
+            update()
         }
 
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -85,7 +95,7 @@ class StatsView @JvmOverloads constructor(
 
         val angles = data.map { 360F * it / sum }
         val startAngles = mutableListOf<Float>()
-        var acc = -45F - angles.first() / 2F
+        var acc = -45F - angles.first() / 2F + rotation
         for (angle in angles) {
             startAngles.add(acc)
             acc -= angle
@@ -93,13 +103,13 @@ class StatsView @JvmOverloads constructor(
 
         for (i in angles.indices) {
             paint.color = colors.getOrNull(i) ?: randomColor()
-            canvas.drawArc(oval, startAngles[i], -angles[i], false, paint)
+            canvas.drawArc(oval, startAngles[i], -angles[i] * progress, false, paint)
         }
 
         val smallAngle = lineWidth / radius * 180F / Math.PI.toFloat()
         for (i in angles.indices) {
             paint.color = colors.getOrNull(i) ?: randomColor()
-            val endStart = startAngles[i] - angles[i] + smallAngle
+            val endStart = startAngles[i] - angles[i] * progress + smallAngle
             canvas.drawArc(oval, endStart, -smallAngle, false, paint)
         }
 
@@ -109,6 +119,51 @@ class StatsView @JvmOverloads constructor(
             center.y + textPaint.textSize / 4,
             textPaint,
         )
+    }
+
+    private fun update() {
+        animatorSet?.let {
+            it.removeAllListeners()
+            it.cancel()
+        }
+
+        progress = 0F
+        rotation = 0F
+
+        val fillAnimator = ValueAnimator.ofFloat(0F, 1F).apply {
+            addUpdateListener { anim ->
+                progress = anim.animatedValue as Float
+                invalidate()
+            }
+            duration = 2500
+            interpolator = LinearInterpolator()
+        }
+
+        val rotationAnimator = ValueAnimator.ofFloat(0F, 360F).apply {
+            addUpdateListener { anim ->
+                rotation = anim.animatedValue as Float
+                invalidate()
+            }
+            duration = 2500
+            interpolator = LinearInterpolator()
+        }
+
+        val pauseAnimator = ValueAnimator.ofFloat(1F, 1F).apply {
+            duration = 500
+        }
+
+        animatorSet = AnimatorSet().apply {
+            playTogether(fillAnimator, rotationAnimator)
+            play(pauseAnimator).after(fillAnimator)
+            addListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationEnd(animation: Animator) {
+                    progress = 0F
+                    rotation = 0F
+                    start()
+                }
+            })
+            start()
+        }
     }
 
     private fun randomColor() = Random.nextInt(0xFF000000.toInt(), 0xFFFFFFFF.toInt())

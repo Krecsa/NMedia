@@ -29,6 +29,12 @@
         android:label="Photo"
         tools:layout="@layout/fragment_photo" />
 
+    <fragment
+        android:id="@+id/statsFragment"
+        android:name="ru.netology.nmedia.fragment.StatsFragment"
+        android:label="Stats"
+        tools:layout="@layout/fragment_stats" />
+
     <action
         android:id="@+id/action_feedFragment_to_newPostFragment"
         app:destination="@id/newPostFragment" />
@@ -40,12 +46,6 @@
     <action
         android:id="@+id/action_postFragment_to_newPostFragment"
         app:destination="@id/newPostFragment" />
-
-    <fragment
-        android:id="@+id/statsFragment"
-        android:name="ru.netology.nmedia.fragment.StatsFragment"
-        android:label="Stats"
-        tools:layout="@layout/fragment_stats" />
 
     <action
         android:id="@+id/action_feedFragment_to_statsFragment"

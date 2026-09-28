@@ -114,6 +114,10 @@ class FeedFragment : Fragment() {
             findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)
         }
 
+        binding.statsFab.setOnClickListener {
+            findNavController().navigate(R.id.action_feedFragment_to_statsFragment)
+        }
+
         binding.retryButton.setOnClickListener {
             adapter.retry()
         }
